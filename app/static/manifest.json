@@ -1,7 +1,7 @@
 {
-    "name": "速豹 AI智能体平台",
-    "short_name": "速豹 AI",
-    "description": "速豹质量管理AI智能体平台。",
+    "name": "HUSTROBOCON AI智能体平台",
+    "short_name": "HUSTROBOCON",
+    "description": "HUSTROBOCON质量管理AI智能体平台。",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait-primary",

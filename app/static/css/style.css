@@ -2196,12 +2196,12 @@ html { scroll-behavior: smooth; }
 
 /* ===== Login Fullscreen Layout ===== */
 .login-fullscreen {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-    background: url('/static/images/login-bg.png') center center / cover no-repeat;
-    animation: loginFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #e8f1fb 0%, #d3e6f9 100%);
+    animation: loginFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
     position: relative;
 }
@@ -2232,16 +2232,6 @@ html { scroll-behavior: smooth; }
     letter-spacing: 1px;
     font-family: 'Noto Serif SC', serif;
 }
-
-.login-top-bar-logo {
-    width: 54px;
-    height: 34px;
-    display: block;
-    flex: 0 0 auto;
-    object-fit: contain;
-}
-
-/* Main Content Area */
 .login-main-area {
     position: relative;
     z-index: 1;
@@ -2254,56 +2244,33 @@ html { scroll-behavior: smooth; }
 }
 
 /* Bottom Footer Bar */
-.login-footer-bar {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 40px;
-    background: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    flex-shrink: 0;
-    box-shadow: 0 -1px 6px rgba(0,0,0,0.06);
-}
-.login-footer-icp {
-    color: rgba(0, 0, 0, 0.5);
-    font-size: 12px;
-    letter-spacing: 0.3px;
-}
-.login-footer-contact {
+.login-footer-bar {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 40px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 32px;
+    flex-shrink: 0;
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.06);
+}
+.login-footer-contact {
     color: rgba(0, 0, 0, 0.5);
     font-size: 12px;
     letter-spacing: 0.3px;
     margin-right: 60px;
 }
 
-/* Left: Calligraphy Panel */
-.login-left-panel {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 560px;
-}
-.login-calligraphy-img {
-    max-width: 100%;
-    height: auto;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-    user-select: none;
-    transform: translateY(-220px);
-}
-
-/* Right: Login Form Panel */
-.login-right-panel {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-    margin-right: 60px;
-}
+/* Login Form Panel (centered) */
+.login-right-panel {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .login-form-card {
     width: 400px;
     background: transparent;
@@ -2443,9 +2410,9 @@ html { scroll-behavior: smooth; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
-[data-theme="dark"] .login-fullscreen {
-    background: url('/static/images/login-bg.png') center center / cover no-repeat;
-}
+[data-theme="dark"] .login-fullscreen {
+    background: linear-gradient(135deg, #e8f1fb 0%, #d3e6f9 100%);
+}
 [data-theme="dark"] .login-fullscreen::before {
     background: rgba(0, 0, 0, 0.45);
 }
@@ -2504,40 +2471,29 @@ html { scroll-behavior: smooth; }
 }
 
 /* Responsive: Stack on mobile */
-@media (max-width: 900px) {
-    .login-main-area {
-        flex-direction: column;
-        gap: 40px;
-        padding: 24px;
-    }
-    .login-left-panel {
-        max-width: 100%;
-    }
-    .login-calligraphy {
-        font-size: 36px;
-        letter-spacing: 10px;
-    }
-    .login-form-card {
-        width: 100%;
-        max-width: 400px;
-        padding: 28px 24px;
-    }
-}
+@media (max-width: 900px) {
+    .login-main-area {
+        flex-direction: column;
+        gap: 40px;
+        padding: 24px;
+    }
+    .login-form-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 28px 24px;
+    }
+}
 @media (max-width: 480px) {
     .login-top-bar {
         height: 48px;
         padding: 0 16px;
     }
-    .login-top-bar-brand {
-        font-size: 19px;
-    }
-    .login-calligraphy {
-        font-size: 28px;
-        letter-spacing: 6px;
-    }
-    .login-form-card {
-        padding: 24px 20px;
-    }
+    .login-top-bar-brand {
+        font-size: 19px;
+    }
+    .login-form-card {
+        padding: 24px 20px;
+    }
     .login-form-header h3 {
         font-size: 20px;
     }
@@ -4584,11 +4540,6 @@ html { scroll-behavior: smooth; }
 body.body-portal-mode {
     height: 100vh;
     overflow: hidden;
-}
-
-.login-fullscreen,
-[data-theme="dark"] .login-fullscreen {
-    background-image: url('/static/images/login-bg.png?v=20260728a');
 }
 
 .login-top-bar,
