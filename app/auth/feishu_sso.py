@@ -198,7 +198,7 @@ def consume_oauth_state(state: str) -> tuple[str, str]:
         ).fetchone()
         conn.execute("DELETE FROM oauth_states WHERE state = ?", (state,))
     if not row or int(row[2]) < now:
-        raise FeishuSSOError("登录请求已失效，请从飞书重新打开速豹应用")
+        raise FeishuSSOError("登录请求已失效，请从飞书重新打开HUSTROBOCON应用")
     return str(row[0]), _safe_next_path(str(row[1]))
 
 

@@ -73,7 +73,7 @@ class RegressionContracts(unittest.TestCase):
         service_worker = read("app/static/sw.js")
         index = read("app/static/index.html")
         main = read("app/main.py")
-        self.assertIn("速豹 AI智能体平台", manifest)
+        self.assertIn("HUSTROBOCON AI智能体平台", manifest)
         self.assertIn("sbagent-static-${CACHE_VERSION}", service_worker)
         self.assertNotIn("jlagent-static", service_worker)
         self.assertIn("fetch(request, { cache: 'no-cache' })", service_worker)

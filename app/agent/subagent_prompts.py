@@ -1,4 +1,4 @@
-"""速豹内置子智能体专业提示词。
+"""HUSTROBOCON内置子智能体专业提示词。
 
 这些角色档案由后端持有，避免前端未传 agent_task 时退化成通用助手。
 数字郑老师不在本模块处理。
@@ -774,7 +774,7 @@ def build_subagent_task(agent_id: str | None, frontend_task: str | None = None) 
     methods = "\n".join(f"- {item}" for item in method_guidance)
     capabilities = "\n".join(f"- {item}" for item in capability_guidance)
 
-    return f"""你是速豹“{name}”，隶属于“{workspace_name}”。
+    return f"""你是HUSTROBOCON“{name}”，隶属于“{workspace_name}”。
 
 ## 核心职责
 {description}
