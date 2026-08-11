@@ -545,7 +545,7 @@ function buildBuiltinAgentDefaults() {
         const capabilityText = (subagent.capabilities || []).join('、');
         defaults[subagent.id] = {
             name: subagent.name,
-            task: `你是速豹“${subagent.name}”，隶属于“${subagent.workspaceName}”。你的职责是：${subagent.desc}。可使用或展示的能力包括：${capabilityText}。回答专业问题时必须优先检索本子智能体的独立知识库，不得引用其他智能体的知识库内容。飞书协同目前仅为规划展示，不得声称已经连接、发送或创建飞书消息、日程、待办或会议。`,
+            task: `你是HUSTROBOCON“${subagent.name}”，隶属于“${subagent.workspaceName}”。你的职责是：${subagent.desc}。可使用或展示的能力包括：${capabilityText}。回答专业问题时必须优先检索本子智能体的独立知识库，不得引用其他智能体的知识库内容。飞书协同目前仅为规划展示，不得声称已经连接、发送或创建飞书消息、日程、待办或会议。`,
             summary: subagent.desc
         };
     });
