@@ -920,6 +920,7 @@ function deleteAgent(agentId) {
 }
 
 async function switchToAgent(agentId) {
+    removeFile();  // 切换智能体时清空输入栏上方的附件显示
     const agent = myAgents.find(a => a.id === agentId);
     if (!agent) return;
     const subagentConfig = SUBAGENT_CONFIG_BY_ID[agentId];
@@ -1843,6 +1844,7 @@ async function doLogout() {
     if (skillBar) skillBar.style.display = 'none';
     modeChatId = { agent: null, chat: null };
     currentUser = null; userRole = null; authToken = null; fullKnowledgeAdmin = false; selectedFile = null; currentChatId = null; allChats = []; currentAgentId = null; currentWorkspaceId = null; agentKbUploadMode = false;
+    removeFile();  // 登出/重置登录状态时同时清空输入栏上方的附件显示
     if (loggingOutSource === 'web') {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userRole');
@@ -1965,6 +1967,7 @@ window.addEventListener('popstate', async function(e) {
         if (currentUser) {
             // Clear session but don't push another history entry
             currentUser = null; userRole = null; authToken = null; fullKnowledgeAdmin = false; selectedFile = null; currentChatId = null; allChats = []; currentAgentId = null; currentWorkspaceId = null; agentKbUploadMode = false;
+    removeFile();  // 登出/重置登录状态时同时清空输入栏上方的附件显示
             if (authSource === 'web') {
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('userRole');
