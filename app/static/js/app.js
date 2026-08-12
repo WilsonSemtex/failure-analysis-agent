@@ -3393,6 +3393,9 @@ formData.append('skill', selectedSkill || '');
     scrollToBottom();
     } finally {
         resetStreamingUI();
+        // [修复] 每次发送后无论成功/失败/中断，都清空上传的图片或文件引用，
+        // 防止下一次对话时再次引用上一次的文件
+        removeFile();
     }
 }
 
