@@ -164,11 +164,6 @@ class Settings:
         os.getenv("FEISHU_SESSION_COOKIE", "sbagent_session"),
     )
 
-    # 知识库文件保留天数（超过后自动删除文件与索引，防止长期占用磁盘）
-    KB_FILE_RETENTION_DAYS: int = int(
-        os.getenv("KB_FILE_RETENTION_DAYS", "7")
-    )
-
     # 数据目录
     DATA_DIR: str = os.getenv("DATA_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"))
     DOCUMENTS_DIR: str = os.getenv("DOCUMENTS_DIR", os.path.join(DATA_DIR, "documents"))

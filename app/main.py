@@ -333,7 +333,7 @@ def create_app() -> FastAPI:
                     except Exception as e:
                         logger.warning(f"[SQM demo retention] cleanup failed: {e}")
                     
-                    # 2. 清理过期的导出文件（超过24小时的）
+                    # 2. 清理过期的导出文件（模型返回的文件保留7天后释放磁盘）
                     try:
                         export_dir = os.path.join(settings.DATA_DIR, "export")
                         if os.path.exists(export_dir):
@@ -349,11 +349,12 @@ def create_app() -> FastAPI:
                                     # 检查目录修改时间
                                     try:
                                         mtime = os.path.getmtime(sub_dir)
+                                        # 模型返回的导出文件保留 7 天（临时文件规则）
                                         max_age = (
                                             sqm_demo_export_age
                                             if settings.SQM_DEMO_LOGIN_ENABLED
                                             and is_demo_chat_id(item)
-                                            else 86400
+                                            else 604800  # 7天 = 7 * 24 * 3600
                                         )
                                         if now - mtime > max_age:
                                             import shutil
@@ -388,40 +389,6 @@ def create_app() -> FastAPI:
                                 logger.info(f"[定期清理] 清理了 {cleaned_temp} 个过期临时目录（>7天）")
                     except Exception as e:
                         logger.warning(f"[定期清理] 临时文件清理失败: {e}")
-
-                    # 2.6 清理过期的知识库文件（上传超过保留期后自动删除文件与索引）
-                    # 上传文件保存于 data/documents/agent_{agent_id}/ 目录，按文件 mtime 判定上传时间；
-                    # 删除时同时清理 ChromaDB 向量索引、关键词索引和原始文件。
-                    try:
-                        from app.rag.document import delete_document
-                        docs_dir = settings.DOCUMENTS_DIR
-                        kb_retention_days = max(1, settings.KB_FILE_RETENTION_DAYS)
-                        kb_max_age = kb_retention_days * 86400
-                        kb_cleaned = 0
-                        if os.path.isdir(docs_dir):
-                            kb_now = time.time()
-                            for entry in sorted(os.listdir(docs_dir)):
-                                agent_dir = os.path.join(docs_dir, entry)
-                                if not os.path.isdir(agent_dir) or not entry.startswith("agent_"):
-                                    continue
-                                agent_id = entry[len("agent_"):]
-                                for fname in os.listdir(agent_dir):
-                                    fpath = os.path.join(agent_dir, fname)
-                                    if not os.path.isfile(fpath):
-                                        continue
-                                    try:
-                                        if kb_now - os.path.getmtime(fpath) > kb_max_age:
-                                            result = delete_document(fname, agent_id=agent_id)
-                                            kb_cleaned += 1
-                                            logger.info(
-                                                f"[定期清理] 知识库文件已过期删除（保留{kb_retention_days}天）: {entry}/{fname} -> {result.get('status')}"
-                                            )
-                                    except Exception as e:
-                                        logger.warning(f"[定期清理] 知识库文件删除失败 {entry}/{fname}: {e}")
-                        if kb_cleaned > 0:
-                            logger.info(f"[定期清理] 清理了 {kb_cleaned} 个过期知识库文件（保留 {kb_retention_days} 天）")
-                    except Exception as e:
-                        logger.warning(f"[定期清理] 知识库过期清理失败: {e}")
 
                     # 3. 记录当前内存状态
                     try:
