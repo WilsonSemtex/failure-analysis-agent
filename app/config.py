@@ -36,11 +36,12 @@ AVAILABLE_MODELS = [
 ]
 
 # 支持图片分析的视觉模型列表
-VISION_MODELS = {"glm-4v-plus", "glm-4v", "glm-4v-flash"}
-# 默认视觉模型（当用户上传图片时自动切换）
-DEFAULT_VISION_MODEL = "glm-4v-flash"
-# 视觉模型专用 API 配置（智谱AI，无论当前选用什么模型，视觉理解始终走智谱）
-# 如未设置则回退到 LLM_API_KEY / LLM_BASE_URL
+VISION_MODELS = {"glm-4v-plus", "glm-4v", "glm-4v-flash", "glm-4.6v-flash"}
+# 默认视觉模型（当用户上传图片时自动切换；可通过 VISION_MODEL 环境变量覆盖）
+DEFAULT_VISION_MODEL = "glm-4.6v-flash"
+# 视觉模型配置（env 可覆盖：VISION_MODEL / VISION_API_KEY / VISION_BASE_URL）
+# 无论当前选用什么模型，视觉理解始终走智谱 AI（embedding 与视觉共用智谱 key）
+VISION_MODEL: str = os.getenv("VISION_MODEL", DEFAULT_VISION_MODEL)
 VISION_API_KEY: str = os.getenv("VISION_API_KEY", os.getenv("LLM_API_KEY", ""))
 VISION_BASE_URL: str = os.getenv("VISION_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
 

@@ -1284,7 +1284,6 @@ def _load_image_as_document(file_path: str) -> list:
     except ImportError:
         from langchain_community.chat_models import ChatOpenAI
     from app.config import settings, DEFAULT_VISION_MODEL, VISION_API_KEY, VISION_BASE_URL
-
     ext = os.path.splitext(file_path)[1].lower()
     mime_map = {
         ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
@@ -1317,7 +1316,7 @@ def _load_image_as_document(file_path: str) -> list:
     logger.info(f"开始VLM解析图片: {filename} ({len(img_bytes)} bytes)")
     try:
         llm = ChatOpenAI(
-            model=DEFAULT_VISION_MODEL,
+            model=getattr(settings, 'VISION_MODEL', '') or DEFAULT_VISION_MODEL,
             api_key=VISION_API_KEY,
             base_url=VISION_BASE_URL,
             temperature=0.1,

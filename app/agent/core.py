@@ -2106,68 +2106,53 @@ async def _chat_mode_stream(user_input: str, session_id: str = "default", deep_t
     yield {"type": "done"}
 
 async def chat_stream_generator_multimodal(multimodal_content: list, session_id: str = "default", agent_id: str = None, agent_task: str = None, skill: str = None) -> AsyncGenerator[dict, None]:
-    """多模态流式对话：支持图片+文本的混合消息"""
+    """多模态流式对话：图片先由视觉模型（glm-4.6v-flash）分析，再将分析结果交给主模型回答。
+
+    两阶段架构，确保对话记录统一：
+    1. 视觉阶段：调用视觉模型（VISION_MODEL）对图片做 OCR/内容描述，得到分析文本；
+    2. 主模型阶段：把图片分析文本拼入用户消息，走 chat_stream_generator 由主模型
+       （当前选中的 DeepSeek 模型）生成回复，会话历史由主模型消息流统一保存，
+       视觉分析仅作为中间上下文，不独立成条历史消息。
+    """
     set_current_agent_id(agent_id)
     set_current_session_id(session_id)
     resolved_agent_task = _resolve_agent_task(agent_task, agent_id)
-    current_model = get_active_model()
-    use_model = current_model
-    if current_model not in VISION_MODELS:
-        use_model = DEFAULT_VISION_MODEL
+    vision_model = getattr(settings, 'VISION_MODEL', '') or DEFAULT_VISION_MODEL
 
-    # [BUG FIX] 使用 create_llm(model_override=) 复用缓存，而非每次新建 ChatOpenAI
-    # 原代码绕过缓存每次新建 HTTP 连接池，损失 500ms-3s 连接建立时间
-    llm = create_llm(model_override=use_model)
-
-    history = get_session_history(session_id)
-    recent_messages = history.messages[-MAX_HISTORY_MESSAGES:]
-
-    # 修复：[human_msg] → [human_msg]
-    human_msg = HumanMessage(content=multimodal_content)
-    all_messages = recent_messages + [human_msg]
-
-    system_prompt = _inject_current_date(SYSTEM_PROMPT)
-    if resolved_agent_task:
-        system_prompt = _inject_current_date(_build_agent_prompt(resolved_agent_task, agent_id=agent_id))
-    # [方案B] 8D skill 注入（multimodal 路径）：从 multimodal_content 提取文本作为 user_input 用于模板匹配
-    if skill:
-        try:
-            mm_text = " ".join([p.get("text", "") for p in multimodal_content if isinstance(p, dict)])
-        except Exception:
-            mm_text = ""
-        skill_ctx = _load_8d_skill_context(skill, mm_text) or _load_fmea_skill_context(skill, mm_text)
-        if skill_ctx:
-            system_prompt = system_prompt + skill_ctx
-
-    full_response = ""
+    # 提取用户文本与图片标记
+    user_text = " ".join([p.get("text", "") for p in multimodal_content if isinstance(p, dict) and p.get("type") == "text"])
+    has_image = any(isinstance(p, dict) and p.get("type") == "image_url" for p in multimodal_content)
 
     try:
-        yield {"type": "thinking", "content": f"正在分析图片（使用{use_model}）..."}
+        vision_text = ""
+        if has_image:
+            yield {"type": "thinking", "content": f"正在分析图片（使用{vision_model}）..."}
+            vision_llm = create_llm(model_override=vision_model)
+            vision_system = SystemMessage(
+                content="你是专业的图像分析助手。请详细、准确地描述图片内容：识别其中的文字（OCR）、表格数据、图表、物体、场景、缺陷特征等。输出结构化的中文描述，供后续质量分析使用。"
+            )
+            async for chunk in vision_llm.astream([vision_system, HumanMessage(content=multimodal_content)]):
+                content = _extract_content(chunk)
+                if content:
+                    vision_text += content
 
-        # [质量修复] 日期已通过 _inject_current_date() 注入 system_prompt 尾部
-        async for chunk in llm.astream([SystemMessage(content=system_prompt)] + all_messages):
-            content = _extract_content(chunk)
-            if content:
-                full_response += content
-                yield {"type": "token", "content": content}
+        # 构造传给主模型的最终消息（图片分析作为上下文）
+        if has_image and vision_text:
+            final_input = f"{user_text}\n\n[图片内容分析（由视觉模型 {vision_model} 生成）]\n{vision_text}\n\n请结合以上图片分析内容回答用户的问题。"
+        elif has_image:
+            final_input = user_text + "\n[图片分析未返回内容，请告知用户图片暂时无法分析]"
+        else:
+            final_input = user_text
 
+        # 主模型（DeepSeek）流式回答；历史由 chat_stream_generator 统一保存
+        async for event in chat_stream_generator(final_input, session_id, agent_id=agent_id, agent_task=resolved_agent_task, skill=skill):
+            yield event
     except Exception as e:
         try:
-            text_parts = [p["text"] for p in multimodal_content if p["type"] == "text"]
-            fallback_text = "\n".join(text_parts) + "\n\n[注意：图片分析失败，请用文字描述你的问题]"
+            fallback_text = user_text + "\n\n[注意：图片分析失败，请用文字描述你的问题]"
             async for event in chat_stream_generator(fallback_text, session_id, agent_id=agent_id, agent_task=resolved_agent_task):
                 yield event
             return
         except Exception as e2:
             yield {"type": "error", "content": f"图片分析失败: {str(e2)}"}
             return
-
-    if full_response:
-        try:
-            text_summary = " ".join([p["text"] for p in multimodal_content if p["type"] == "text"])
-            history.add_message(HumanMessage(content=text_summary))
-            history.add_message(AIMessage(content=full_response))
-        except Exception:
-            pass
-
-    yield {"type": "done"}
