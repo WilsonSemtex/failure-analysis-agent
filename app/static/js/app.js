@@ -2433,10 +2433,14 @@ async function loadChatList(options = {}) {
         // 发送消息后 currentChatId 已存在时绝不静默切换/重载，
         // 否则 loadChatHistory 的清空操作会抹掉刚发出的消息。
         } else if (!currentChatId) {
-            currentChatId = modeChats[0].chat_id;
-            modeChatId[currentMode] = currentChatId;
-            renderChatList();
-            await loadChatHistory(currentChatId);
+            // [修复] modeChats 为空（当前模式无任何会话）时跳过，
+            // 避免 modeChats[0] 为 undefined 读取 .chat_id 报错
+            if (modeChats.length > 0) {
+                currentChatId = modeChats[0].chat_id;
+                modeChatId[currentMode] = currentChatId;
+                renderChatList();
+                await loadChatHistory(currentChatId);
+            }
         }
         }
     } catch (e) { console.error('加载会话列表失败', e); }

@@ -12,13 +12,13 @@ const DYNAMIC_CACHE = `sbagent-dynamic-${CACHE_VERSION}`;
 // 需要预缓存的静态资源
 const PRECACHE_URLS = [
     '/',
-    '/static/css/style.css?v=20260803-cache2',
-    '/static/js/subagents-data.js?v=20260803-cache2',
-    '/static/js/app.js?v=20260803-cache2',
-    '/static/manifest.json?v=20260803-cache2',
+    '/static/css/style.css?v=20260812-2',
+    '/static/js/subagents-data.js?v=20260812-2',
+    '/static/js/app.js?v=20260812-2',
+    '/static/manifest.json?v=20260812-2',
     '/static/images/logo.png?v=20260812',
-    '/static/icons/icon-192.png?v=20260803-cache2',
-    '/static/icons/icon-512.png?v=20260803-cache2',
+    '/static/icons/icon-192.png?v=20260812-2',
+    '/static/icons/icon-512.png?v=20260812-2',
 ];
 
 // 不缓存的路径（API请求、流式响应等）
