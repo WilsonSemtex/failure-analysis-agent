@@ -3334,17 +3334,20 @@ async function sendMessage() {
     document.getElementById('chatContent').classList.remove('centered');
 
     if (selectedFile && message) {
-        const isImage = selectedFile.type.startsWith('image/');
+        const file = selectedFile;  // 保存文件引用供上传使用
+        const isImage = file.type.startsWith('image/');
         const icon = isImage ? '🖼️' : '📎';
         if (isImage && selectedFileBase64) {
-            addMessageToUI('user', `${icon} ${selectedFile.name}\n${message}`, selectedFileBase64);
+            addMessageToUI('user', `${icon} ${file.name}\n${message}`, selectedFileBase64);
         } else {
-            addMessageToUI('user', `${icon} ${selectedFile.name}\n${message}`);
+            addMessageToUI('user', `${icon} ${file.name}\n${message}`);
         }
         input.value = ''; autoResize(input);
+        // [发送即清除] 用户消息显示后立即清空输入栏上方的附件显示，不等回复完毕
+        removeFile();
         const bubble = createStreamingBubble();
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('file', file);
         formData.append('message', message);
         formData.append('session_id', currentChatId);
         formData.append('web_search', webSearchEnabled);
@@ -3362,14 +3365,16 @@ async function sendMessage() {
         // 聊天框上传文件仅用于临时分析，不存入知识库
         formData.append('store_to_kb', 'false');
         await streamChat('/api/v1/chat-with-file/stream', { method: 'POST', body: formData, headers: authToken ? { 'Authorization': 'Bearer ' + authToken } : {} }, bubble);
-        removeFile();
         await loadChatList({ autoCreate: false });
     } else if (selectedFile && !message) {
         // 文件无消息时，自动添加分析提示，走聊天流式分析（不存知识库）
-        addMessageToUI('user', `[上传文档] ${selectedFile.name}`);
+        const file = selectedFile;  // 保存文件引用供上传使用
+        addMessageToUI('user', `[上传文档] ${file.name}`);
+        // [发送即清除] 用户消息显示后立即清空输入栏上方的附件显示，不等回复完毕
+        removeFile();
         const bubble = createStreamingBubble();
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('file', file);
         formData.append('message', '请分析这个文件的内容');
         formData.append('session_id', currentChatId);
         formData.append('web_search', webSearchEnabled);
@@ -3383,7 +3388,6 @@ formData.append('skill', selectedSkill || '');
         }
         formData.append('store_to_kb', 'false');
         await streamChat('/api/v1/chat-with-file/stream', { method: 'POST', body: formData, headers: authToken ? { 'Authorization': 'Bearer ' + authToken } : {} }, bubble);
-        removeFile();
         await loadChatList({ autoCreate: false });
     } else {
         lastMessageText = message;
