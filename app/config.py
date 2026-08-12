@@ -133,7 +133,7 @@ class Settings:
     # Comma-separated internal usernames with upload/delete access to every
     # knowledge base, including digital-teacher knowledge bases.
     FULL_KB_ADMIN_USERNAMES: str = os.getenv(
-        "FULL_KB_ADMIN_USERNAMES", "adminsubao"
+        "FULL_KB_ADMIN_USERNAMES", "hustroboconadmin"
     )
     # Feishu organization directory synchronization. ``tenant_key`` may be
     # omitted after at least one successful SSO login because it can then be

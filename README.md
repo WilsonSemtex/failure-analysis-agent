@@ -63,9 +63,9 @@ python app/main.py
 | 用户名 | 密码 | 角色 |
 |---|---|---|
 | **administrator** | **admin12345** | 管理员 |
-| adminsubao | subao123 | 管理员 |
-| user01 | subaouser1 | 普通用户 |
-| jiangxy / jsxf | 123456abc | 普通用户 |
+| **hustroboconadmin** | **admin123** | 管理员（知识库全量管理） |
+| **rc01** | **rc12345** | 普通用户 |
+| jiangxy | 123456abc | 普通用户 |
 
 > 账号在首次启动时自动创建，可在 `data/users/users.json` 中管理。
 

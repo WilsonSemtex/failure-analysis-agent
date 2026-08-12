@@ -16,7 +16,7 @@ def _get_users_file() -> str:
 
 
 OLD_FULL_KB_ADMIN_USERNAME = "adminquanzhi"
-FULL_KB_ADMIN_USERNAME = "adminsubao"
+FULL_KB_ADMIN_USERNAME = "hustroboconadmin"
 
 
 def _migrate_user_owned_files(old_username: str, new_username: str) -> None:
@@ -63,15 +63,27 @@ def _load_users() -> dict:
             users["administrator"] = users.pop("admin")
             changed = True
         _migrate_user_owned_files("admin", "administrator")
+        # 账号改名：adminsubao → hustroboconadmin（管理员），user01 → rc01（普通用户）
+        if "adminsubao" in users and "hustroboconadmin" not in users:
+            users["hustroboconadmin"] = users.pop("adminsubao")
+            changed = True
+        _migrate_user_owned_files("adminsubao", "hustroboconadmin")
+        if "user01" in users and "rc01" not in users:
+            users["rc01"] = users.pop("user01")
+            changed = True
+        _migrate_user_owned_files("user01", "rc01")
+        # 删除已废弃的 jsxf 普通用户
+        if "jsxf" in users:
+            del users["jsxf"]
+            changed = True
         if "dfsr1" in users:
             del users["dfsr1"]
             changed = True
         required_users = {
             "administrator": ("admin12345", "admin"),
-            "adminsubao": ("subao123", "admin"),
-            "user01": ("subaouser1", "user"),
+            "hustroboconadmin": ("admin123", "admin"),
+            "rc01": ("rc12345", "user"),
             "jiangxy": ("123456abc", "user"),
-            "jsxf": ("123456abc", "user"),
         }
         for username, (default_password, required_role) in required_users.items():
             if username not in users:
@@ -86,8 +98,8 @@ def _load_users() -> dict:
                 changed = True
         # 一次性迁移上一版本生成的临时密码；已被管理员改过的密码保持不变
         password_migrations = {
-            "adminsubao": ("quanzhi123", "subao123"),
-            "user01": ("jluser1", "subaouser1"),
+            "hustroboconadmin": ("subao123", "admin123"),
+            "rc01": ("subaouser1", "rc12345"),
         }
         for username, (old_password, new_password) in password_migrations.items():
             info = users.get(username, {})
@@ -114,14 +126,14 @@ def _load_users() -> dict:
             "password_plain": "admin12345",
             "role": "admin",
         },
-        "adminsubao": {
-            "password_hash": _hash_password("subao123"),
-            "password_plain": "subao123",
+        "hustroboconadmin": {
+            "password_hash": _hash_password("admin123"),
+            "password_plain": "admin123",
             "role": "admin",
         },
-        "user01": {
-            "password_hash": _hash_password("subaouser1"),
-            "password_plain": "subaouser1",
+        "rc01": {
+            "password_hash": _hash_password("rc12345"),
+            "password_plain": "rc12345",
             "role": "user",
         },
         "jiangxy": {
@@ -129,11 +141,6 @@ def _load_users() -> dict:
             "password_plain": "123456abc",
             "role": "user",
         },
-        "jsxf": {
-            "password_hash": _hash_password("123456abc"),
-            "password_plain": "123456abc",
-            "role": "user",
-        }
     }
     _save_users(default_users)
     return default_users

@@ -17,10 +17,10 @@ class KnowledgeBasePermissionTests(unittest.TestCase):
 
     def test_default_full_admin_is_always_retained(self):
         settings.FULL_KB_ADMIN_USERNAMES = ""
-        self.assertTrue(is_full_kb_admin("adminsubao"))
+        self.assertTrue(is_full_kb_admin("hustroboconadmin"))
 
     def test_feishu_user_can_be_granted_full_access(self):
-        settings.FULL_KB_ADMIN_USERNAMES = "adminsubao,fs_梅琴_54b7b5dcf1"
+        settings.FULL_KB_ADMIN_USERNAMES = "hustroboconadmin,fs_梅琴_54b7b5dcf1"
         self.assertIn("fs_梅琴_54b7b5dcf1", full_kb_admin_usernames())
         self.assertTrue(is_full_kb_admin("fs_梅琴_54b7b5dcf1"))
 

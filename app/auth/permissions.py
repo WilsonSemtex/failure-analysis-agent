@@ -7,7 +7,7 @@ only uses the returned capability flag to show or hide controls.
 from app.config import settings
 
 
-DEFAULT_FULL_KB_ADMINS = {"adminsubao"}
+DEFAULT_FULL_KB_ADMINS = {"hustroboconadmin"}
 
 
 def full_kb_admin_usernames() -> set[str]:
