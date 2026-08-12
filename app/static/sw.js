@@ -16,7 +16,7 @@ const PRECACHE_URLS = [
     '/static/js/subagents-data.js?v=20260803-cache2',
     '/static/js/app.js?v=20260803-cache2',
     '/static/manifest.json?v=20260803-cache2',
-    '/static/icons/icon-gy.svg?v=20260803-cache2',
+    '/static/images/logo.png?v=20260812',
     '/static/icons/icon-192.png?v=20260803-cache2',
     '/static/icons/icon-512.png?v=20260803-cache2',
 ];
