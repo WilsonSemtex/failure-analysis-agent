@@ -2224,6 +2224,13 @@ html { scroll-behavior: smooth; }
     letter-spacing: 1px;
     font-family: 'Noto Serif SC', serif;
 }
+.login-top-bar-logo {
+    height: 34px;
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+    object-fit: contain;
+}
 .login-main-area {
     position: relative;
     z-index: 1;
